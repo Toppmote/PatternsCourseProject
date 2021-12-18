@@ -1,14 +1,28 @@
 package ru.course.controller;
 
-import org.springframework.stereotype.Controller;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+/**
+ * Контроллер для запросов от клиента
+ */
+@Slf4j
+@RestController
 public class FacadeController {
 
-    @GetMapping("")
-    public void test() {
-        System.out.println();
+    /**
+     * Метод обработки запроса на загрузку начальной страницы
+     *
+     * @return Model
+     */
+    @GetMapping("/")
+    public ModelAndView loadIndexPage(Model model) {
+        ModelAndView index = new ModelAndView("index");
+        log.info("GET\tLoaded starting page");
+        return index;
     }
 
 }
