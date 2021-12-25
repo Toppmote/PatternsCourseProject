@@ -3,6 +3,7 @@ package ru.course;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,12 +26,12 @@ public class Config {
     /**
      * Список имен
      */
-    public static Set<String> NAMES;
+    public static List<String> NAMES;
 
     /**
      * Список фамилий
      */
-    public static Set<String> SURNAMES;
+    public static List<String> SURNAMES;
 
     public Config(String propertyFileName) {
         initAllData(propertyFileName);
@@ -46,11 +47,11 @@ public class Config {
         NAMES = Arrays.stream(properties.getProperty("user_names")
                         .replace(", ", "")
                         .split(""))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         SURNAMES = Arrays.stream(properties.getProperty("user_surnames")
                         .replace(", ", "")
                         .split(""))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
