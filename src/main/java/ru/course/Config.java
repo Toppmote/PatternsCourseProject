@@ -2,10 +2,8 @@ package ru.course;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,9 +27,24 @@ public class Config {
     public static List<String> NAMES;
 
     /**
+     * Количество имен
+     */
+    public static int NAMES_COUNT;
+
+    /**
      * Список фамилий
      */
     public static List<String> SURNAMES;
+
+    /**
+     * Количество фамилий
+     */
+    public static int SURNAMES_COUNT;
+
+    /**
+     * Начальная дата для регистрации пользователей
+     */
+    public static LocalDate START_DATE;
 
     public Config(String propertyFileName) {
         initAllData(propertyFileName);
@@ -52,6 +65,9 @@ public class Config {
                         .replace(", ", "")
                         .split(""))
                 .collect(Collectors.toList());
+        Integer[] intStartDate = (Integer[]) Arrays.stream(properties.getProperty("start_date").split("\\."))
+                .map(Integer::parseInt).toArray();
+        START_DATE = LocalDate.of(intStartDate[2], intStartDate[1], intStartDate[0]);
     }
 
     /**
