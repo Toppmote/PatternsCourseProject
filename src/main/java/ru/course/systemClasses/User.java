@@ -69,11 +69,11 @@ public class User extends Thread {
 
     /**
      * Процедура добавления друга
-     *
-     * @param friend новый друг
      */
-    public void addFriend(User friend) {
-        this.friendsList.add(friend);
+    public void addFriend() {
+        UserAction addNewFriendAction = new AddNewFriendAction(new Date().toString());
+        addNewFriendAction.doAction(this);
+        this.activityFeed.add(addNewFriendAction);
     }
 
     /**
@@ -143,9 +143,7 @@ public class User extends Thread {
                     this.activityFeed.add(addNewFriendAction);
                     break;
                 case 1:
-                    UserAction doNewPostAction = new DoNewPostAction(new Date().toString());
-                    doNewPostAction.doAction(this);
-                    this.activityFeed.add(doNewPostAction);
+                    this.addFriend();
                     break;
                 case 2:
                     UserAction sendMesAction = new SendMesAction(new Date().toString());
