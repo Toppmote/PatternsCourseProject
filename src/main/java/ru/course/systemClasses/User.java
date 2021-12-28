@@ -1,47 +1,55 @@
 package ru.course.systemClasses;
 
-import ru.course.state.BlockedState;
-import ru.course.state.UnverifiedState;
-import ru.course.state.UserState;
-import ru.course.state.VerifiedState;
-import ru.course.systemClasses.userActions.UserAction;
+import lombok.Getter;
+import lombok.Setter;
+import ru.course.Config;
+import ru.course.systemClasses.userActions.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Класс, описывающий пользователя социальной сети
  */
-public class User {
+public class User extends Thread {
 
     /**
      * ID пользователя. Уникально
      */
-    private final int id;
+    @Getter
+    private final long id;
 
     /**
      * ФИО пользователя
      */
+    @Getter
+    @Setter
     public String FIO;
 
     /**
      * Дата регистрации
      */
+    @Getter
     private final String regDate;
 
     /**
      * Список друзей
      */
+    @Getter
     public final List<User> friendsList;
 
     /**
      * Лента активности
      */
+    @Getter
     private final List<UserAction> activityFeed;
 
     /**
      * Список сообщений
      */
+    @Getter
     private final List<Message> messageList;
 
     /**
@@ -56,65 +64,7 @@ public class User {
         activityFeed = new ArrayList<>();
         messageList = new ArrayList<>();
         this.id = this.hashCode();
-        this.state = new UnverifiedState(this);
-    }
-
-    /**
-     * Метод входа в соц. сеть
-     */
-    public void logIn() {
-        this.state.onLoggingIn();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("User{" + "FIO='").append(FIO).append('\'')
-                .append(", regDate='").append(regDate).append('\'')
-                .append('}');
-        stringBuilder.append("\nFriends:\n");
-        for (User friend : friendsList)
-            stringBuilder.append("ID:").append(friend.getId()).append(", FIO: ").append(friend.getFIO()).append("\n");
-        stringBuilder.append("\nMessages:\n");
-        for (Message message : messageList)
-            stringBuilder.append("\n").append(message);
-        return stringBuilder.toString();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public UserState getState() {
-        return state;
-    }
-
-    public void setState(UserState state) {
-        this.state = state;
-    }
-
-    public String getFIO() {
-        return FIO;
-    }
-
-    public void setFIO(String FIO) {
-        this.FIO = FIO;
-    }
-
-    public String getRegDate() {
-        return regDate;
-    }
-
-    public List<User> getFriendsList() {
-        return friendsList;
-    }
-
-    public List<UserAction> getActivityFeed() {
-        return activityFeed;
-    }
-
-    public List<Message> getMessageList() {
-        return messageList;
+        this.state = UserState.UNVERIFIED_STATE;
     }
 
     /**
@@ -151,15 +101,69 @@ public class User {
      */
     public static void doVerification(User user) {
         System.out.println("User with FIO " + user.getFIO() + " verified his account.");
-        user.setState(new VerifiedState(user));
+        user.setUserState(UserState.VERIFIED_STATE);
     }
 
     /**
-     * Процедура выкладывания пользователем вредоносной записи, после которой он блокируется в соц. сети
+     * Геттер для состояния
+     *
+     * @return состояние пользователя
      */
-    public void doBadPost() {
-        System.out.println("User " + this.FIO + " made bad post.");
-        this.state = new BlockedState(this);
+    public UserState getUserState() {
+        return state;
     }
 
+    /**
+     * Сеттер для состояния
+     *
+     * @param state новое состояние пользователя
+     */
+    public void setUserState(UserState state) {
+        this.state = state;
+    }
+
+    /**
+     * Процедура потока-пользователя.
+     * Каждый ползователь выполняет случайное количество действий (минимальная и максимальная границы прописаны в
+     * проперти файле). Выполненные действия добавляются в ленку активности.
+     * Сгенерироваться может одно из четырех действий: добавить нового друга, добавить новый пост, отправить сообщение
+     * другому пользователю, подтвердить аккаунт.
+     */
+    @Override
+    public void run() {
+        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+        int userActionQuantity = threadLocalRandom
+                .nextInt(Config.MIN_USER_ACTIONS_QUANTITY, Config.MAX_USER_ACTIONS_QUANTITY);
+        for (int i = 0; i < userActionQuantity; i++) {
+            int actionNumber = threadLocalRandom.nextInt(Config.ACTIONS_QUANTITY);
+            switch (actionNumber) {
+                case 0:
+                    UserAction addNewFriendAction = new AddNewFriendAction(new Date().toString());
+                    addNewFriendAction.doAction(this);
+                    this.activityFeed.add(addNewFriendAction);
+                    break;
+                case 1:
+                    UserAction doNewPostAction = new DoNewPostAction(new Date().toString());
+                    doNewPostAction.doAction(this);
+                    this.activityFeed.add(doNewPostAction);
+                    break;
+                case 2:
+                    UserAction sendMesAction = new SendMesAction(new Date().toString());
+                    sendMesAction.doAction(this);
+                    this.activityFeed.add(sendMesAction);
+                    break;
+                case 3:
+                    if (this.state != UserState.VERIFIED_STATE) {
+                        UserAction doVerification = new DoVerification(new Date().toString());
+                        doVerification.doAction(this);
+                        this.activityFeed.add(doVerification);
+                        break;
+                    } else
+                        System.out.println("User " + this.FIO + " already verify his account");
+                default:
+                    System.out.println("Something went wrong. Generated action number out of scope.");
+                    break;
+            }
+        }
+    }
 }

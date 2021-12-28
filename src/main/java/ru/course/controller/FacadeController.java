@@ -1,10 +1,10 @@
 package ru.course.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import ru.course.Config;
 import ru.course.systemClasses.SystemManager;
 
 /**
@@ -33,11 +33,13 @@ public class FacadeController {
      *
      * @return Model
      */
+    @GetMapping("/main_screen")
     public ModelAndView startSystem() {
-        systemManager = new SystemManager();
-        systemManager.initUsers();
-
-        return new ModelAndView("index");
+        new Config("config.properties");
+        systemManager = SystemManager.getInstance();
+        systemManager.generateUsers();
+        systemManager.launchUsersThreads();
+        return new ModelAndView("main_page");
     }
 
 }

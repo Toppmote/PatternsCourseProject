@@ -1,19 +1,30 @@
 package ru.course.systemClasses;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.course.Config;
 import ru.course.iterator.IterableCollection;
 import ru.course.iterator.Iterator;
 import ru.course.iterator.ListIterator;
 import ru.course.systemClasses.filters.Filter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
  * Класс менеджера системы
  */
 public class SystemManager implements IterableCollection {
+
+    private static SystemManager instance;
+
+    /**
+     * Логгер
+     */
+    static Logger logger = LoggerFactory.getLogger(SystemManager.class);
 
     /**
      * Список пользователей
@@ -25,10 +36,42 @@ public class SystemManager implements IterableCollection {
      */
     private Filter filter;
 
-    public SystemManager() {
+    private SystemManager() {
         this.userList = new ArrayList<>();
         this.filter = null;
-        System.out.println("System manager has been initialized");
+        logger.info("System manager has been initialized");
+    }
+
+    public static SystemManager getInstance() {
+        if (instance == null)
+            return new SystemManager();
+        return instance;
+    }
+
+    /**
+     * процедура генерации всех пользователей. Имя и дата регистрации генерируются случайно.
+     */
+    public void generateUsers() {
+        ThreadLocalRandom localRandom = ThreadLocalRandom.current();
+        for (int i = 0; i < Config.USERS_QUANTITY; i++) {
+            String name = Config.NAMES.get(localRandom.nextInt(Config.NAMES_COUNT)) +
+                    " " +
+                    Config.SURNAMES.get(localRandom.nextInt(Config.SURNAMES_COUNT));
+            String regDate = new Date(localRandom.nextLong(Config.START_DATE.getTime(), new Date().getTime()))
+                    .toString();
+            this.userList.add(new User(name, regDate));
+        }
+        System.out.println();
+    }
+
+    /**
+     * Процедура запуска потоков для каждого клиента.
+     */
+    public void launchUsersThreads() {
+        ExecutorService executorService = Executors.newFixedThreadPool(Config.USERS_QUANTITY);
+        for (int i = 0; i < Config.USERS_QUANTITY; i++)
+            executorService.execute(this.userList.get(i));
+        executorService.shutdown();
     }
 
     /**

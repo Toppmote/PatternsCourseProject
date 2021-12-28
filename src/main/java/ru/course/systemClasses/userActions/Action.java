@@ -7,6 +7,11 @@ import ru.course.systemClasses.User;
  */
 public interface Action {
 
+    /**
+     * Метод совершения действия
+     *
+     * @param user пользователь, совершающий действие
+     */
     void doAction(User user);
 
 }
