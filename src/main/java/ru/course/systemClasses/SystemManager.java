@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 /**
  * Класс менеджера системы
  */
-public class SystemManager implements IterableCollection {
+public final class SystemManager implements IterableCollection {
 
-    private static SystemManager instance;
+    private static volatile SystemManager instance;
 
     /**
      * Логгер
@@ -42,10 +42,21 @@ public class SystemManager implements IterableCollection {
         logger.info("System manager has been initialized");
     }
 
+    /**
+     * Реализация паттерна "одниночка" в многопоточной среде
+     *
+     * @return объект системного менеджера
+     */
     public static SystemManager getInstance() {
-        if (instance == null)
-            return new SystemManager();
-        return instance;
+        SystemManager result = instance;
+        if (result != null) {
+            return result;
+        }
+        synchronized (SystemManager.class) {
+            if (instance == null)
+                instance = new SystemManager();
+            return instance;
+        }
     }
 
     /**
@@ -125,7 +136,7 @@ public class SystemManager implements IterableCollection {
      * @return найденный пользователь
      */
     public List<FilterResult> findFilterResultByUserID(int id) {
-        Optional<User> user = this.findUsersByID(id);
+        Optional<User> user = instance.findUsersByID(id);
         return user.map(value -> filter.findFilterResultByUser(value)).orElse(null);
     }
 

@@ -1,5 +1,6 @@
 package ru.course.systemClasses;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.course.Config;
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Класс, описывающий пользователя социальной сети
  */
+@EqualsAndHashCode(callSuper = false)
 public class User extends Thread {
 
     /**
@@ -38,18 +40,21 @@ public class User extends Thread {
      * Список друзей
      */
     @Getter
+    @EqualsAndHashCode.Exclude
     public final List<User> friendsList;
 
     /**
      * Лента активности
      */
     @Getter
+    @EqualsAndHashCode.Exclude
     private final List<UserAction> activityFeed;
 
     /**
      * Список сообщений
      */
     @Getter
+    @EqualsAndHashCode.Exclude
     private final List<Message> messageList;
 
     /**
@@ -138,9 +143,9 @@ public class User extends Thread {
             int actionNumber = threadLocalRandom.nextInt(Config.ACTIONS_QUANTITY);
             switch (actionNumber) {
                 case 0:
-                    UserAction addNewFriendAction = new AddNewFriendAction(new Date().toString());
-                    addNewFriendAction.doAction(this);
-                    this.activityFeed.add(addNewFriendAction);
+                    UserAction doNewPostAction = new DoNewPostAction(new Date().toString());
+                    doNewPostAction.doAction(this);
+                    this.activityFeed.add(doNewPostAction);
                     break;
                 case 1:
                     this.addFriend();
@@ -164,4 +169,5 @@ public class User extends Thread {
             }
         }
     }
+
 }

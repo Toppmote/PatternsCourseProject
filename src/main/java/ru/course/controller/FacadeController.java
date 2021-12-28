@@ -14,8 +14,6 @@ import ru.course.systemClasses.SystemManager;
 @RestController
 public class FacadeController {
 
-    SystemManager systemManager;
-
     /**
      * Метод обработки запроса на загрузку начальной страницы
      *
@@ -24,6 +22,8 @@ public class FacadeController {
     @GetMapping("/")
     public ModelAndView loadIndexPage() {
         ModelAndView index = new ModelAndView("index");
+        new Config("config.properties");
+        SystemManager.getInstance().generateUsers();
         log.info("GET\tLoaded starting page");
         return index;
     }
@@ -34,11 +34,9 @@ public class FacadeController {
      * @return Model
      */
     @GetMapping("/main_screen")
-    public ModelAndView startSystem() {
-        new Config("config.properties");
-        systemManager = SystemManager.getInstance();
-        systemManager.generateUsers();
-        systemManager.launchUsersThreads();
+    public ModelAndView startSystem() throws InterruptedException {
+        SystemManager.getInstance().launchUsersThreads();
+        Thread.sleep(500);
         return new ModelAndView("main_page");
     }
 

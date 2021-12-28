@@ -22,6 +22,7 @@ public class DoVerification extends UserAction {
         if (user.getUserState() != UserState.BLOCKED_STATE) {
             System.out.println("User with FIO " + user.getFIO() + " verified his account.");
             user.setUserState(UserState.VERIFIED_STATE);
+            this.description = "User verified his account.";
         } else
             System.out.println("User " + user.getFIO() + " cannot verify his account, because he is blocked.");
     }

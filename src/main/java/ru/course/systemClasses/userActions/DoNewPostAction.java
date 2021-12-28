@@ -35,7 +35,7 @@ public class DoNewPostAction extends UserAction {
                 stringBuilder.append(Config.ALL_WORDS.get(threadLocalRandom.nextInt(Config.WORDS_COUNT)))
                         .append(" ");
             this.postMessage = stringBuilder.toString();
-            System.out.println("New post has been posted. Date " + date);
+            this.description = "New post has been posted.";
         } else
             System.out.println("User " + user.getFIO() + " cannot add new posts, because he is blocked.");
     }
