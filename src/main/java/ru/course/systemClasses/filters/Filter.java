@@ -1,5 +1,6 @@
 package ru.course.systemClasses.filters;
 
+import ru.course.strategy.Algorithm;
 import ru.course.systemClasses.FilterResult;
 import ru.course.systemClasses.User;
 
@@ -35,5 +36,19 @@ public interface Filter {
      * @param result результат фильтрации
      */
     void addFilterResult(FilterResult result);
+
+    /**
+     * Геттер для алгоритма
+     *
+     * @return текущий алгоритм
+     */
+    Algorithm getAlgorithm();
+
+    /**
+     * Сеттер для алгоритма
+     *
+     * @param algorithm новый алгоритм
+     */
+    void setAlgorithm(Algorithm algorithm);
 
 }
