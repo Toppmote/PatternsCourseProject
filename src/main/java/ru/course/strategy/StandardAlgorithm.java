@@ -12,21 +12,21 @@ import java.util.stream.Collectors;
 
 /**
  * Класс, реализующий лояльный алгоритм фильтрации текста.
- * Блокирует пользователей, когда процент вредоносных слов в сообщении или посте не менее 45.
+ * Блокирует пользователей, когда процент вредоносных слов в сообщении или посте не менее 20.
  */
 public class StandardAlgorithm implements Algorithm {
 
     /**
      * Порог вредоносности текста письма
      */
-    public final int HARM_EDGE = 45;
+    public final int HARM_EDGE = 20;
 
     @Override
     public synchronized FilterResult runAlgorithm(User user, String text) {
-        List<String> bad_words = Arrays.stream(text.split(" "))
+        List<String> badWords = Arrays.stream(text.split(" "))
                 .filter(word -> Config.BAD_WORDS.contains(word))
                 .collect(Collectors.toList());
-        int harmPercent = bad_words.size() / text.split(" ").length * 100;
+        int harmPercent = (int) ((double)badWords.size() / Arrays.stream(text.split(" ")).count() * 100);
         if (harmPercent > HARM_EDGE)
             user.setUserState(UserState.BLOCKED_STATE);
         return new FilterResult(user, text, harmPercent);

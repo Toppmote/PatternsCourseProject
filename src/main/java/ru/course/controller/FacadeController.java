@@ -22,8 +22,6 @@ public class FacadeController {
     @GetMapping("/")
     public ModelAndView loadIndexPage() {
         ModelAndView index = new ModelAndView("index");
-        new Config("config.properties");
-        SystemManager.getInstance().generateUsers();
         log.info("GET\tLoaded starting page");
         return index;
     }
@@ -35,8 +33,10 @@ public class FacadeController {
      */
     @GetMapping("/main_screen")
     public ModelAndView startSystem() throws InterruptedException {
+        new Config("config.properties");
+        SystemManager.getInstance().generateUsers();
         SystemManager.getInstance().launchUsersThreads();
-        Thread.sleep(500);
+        Thread.sleep(1000);
         return new ModelAndView("main_page");
     }
 
