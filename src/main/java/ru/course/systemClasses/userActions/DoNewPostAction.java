@@ -1,6 +1,7 @@
 package ru.course.systemClasses.userActions;
 
 import ru.course.Config;
+import ru.course.systemClasses.SystemManager;
 import ru.course.systemClasses.User;
 import ru.course.systemClasses.UserState;
 
@@ -21,7 +22,7 @@ public class DoNewPostAction extends UserAction {
     public String postMessage;
 
     /**
-     * Создание нового поста пользователем
+     * Создание нового поста пользователем. После создания вызываем метод фильтрации текста
      *
      * @param user пользователь, совершивший действие
      */
@@ -30,12 +31,13 @@ public class DoNewPostAction extends UserAction {
         if (user.getUserState() != UserState.BLOCKED_STATE) {
             ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
             StringBuilder stringBuilder = new StringBuilder();
-            int wordsCount = threadLocalRandom.nextInt(Config.MIN_WORDS_COUNT,Config.MAX_WORDS_COUNT);
+            int wordsCount = threadLocalRandom.nextInt(Config.MIN_WORDS_COUNT, Config.MAX_WORDS_COUNT);
             for (int i = 0; i < wordsCount; i++)
                 stringBuilder.append(Config.ALL_WORDS.get(threadLocalRandom.nextInt(Config.WORDS_COUNT)))
                         .append(" ");
             this.postMessage = stringBuilder.toString();
             this.description = "New post has been posted.";
+            SystemManager.getInstance().getFilter().computeResult(user, stringBuilder.toString());
         } else
             System.out.println("User " + user.getFIO() + " cannot add new posts, because he is blocked.");
     }

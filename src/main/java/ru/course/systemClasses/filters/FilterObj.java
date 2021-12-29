@@ -1,8 +1,9 @@
 package ru.course.systemClasses.filters;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.course.strategy.Algorithm;
 import ru.course.systemClasses.FilterResult;
-import ru.course.systemClasses.Message;
 import ru.course.systemClasses.User;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class FilterObj implements Filter {
     /**
      * Алгоритм фильтрации
      */
+    @Getter
+    @Setter
     private Algorithm algorithm;
 
     /**
@@ -32,9 +35,9 @@ public class FilterObj implements Filter {
     }
 
     @Override
-    public void computeResult(User user, Message message) {
-        System.out.println("Main filter start working");
-        results.add(algorithm.runAlgorithm(user, message));
+    public void computeResult(User user, String text) {
+        System.out.println("Main filter start working for user " + user.getFIO());
+        results.add(algorithm.runAlgorithm(user, text));
         System.out.println("Main filter finished working");
     }
 
@@ -50,14 +53,6 @@ public class FilterObj implements Filter {
 
     public void addFilterResult(FilterResult result) {
         this.results.add(result);
-    }
-
-    public Algorithm getAlgorithm() {
-        return algorithm;
-    }
-
-    public void setAlgorithm(Algorithm algorithm) {
-        this.algorithm = algorithm;
     }
 
 }

@@ -11,18 +11,18 @@ public class FilterResult {
     private final User user;
 
     /**
-     * Сообщение
+     * Текст, написанный пользователем
      */
-    private final Message message;
+    private final String text;
 
     /**
      * Процент вредоносности
      */
     private final int harmPercent;
 
-    public FilterResult(User user, Message message, int harmPercent) {
+    public FilterResult(User user, String text, int harmPercent) {
         this.user = user;
-        this.message = message;
+        this.text = text;
         this.harmPercent = harmPercent;
     }
 
@@ -34,7 +34,7 @@ public class FilterResult {
     public String toString() {
         return "FilterResult{" +
                 "author=" + user +
-                ", message=" + message +
+                ", text=" + text +
                 ", harmPercent=" + harmPercent +
                 '}';
     }

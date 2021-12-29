@@ -1,12 +1,16 @@
 package ru.course.systemClasses;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.course.Config;
 import ru.course.iterator.IterableCollection;
 import ru.course.iterator.Iterator;
 import ru.course.iterator.ListIterator;
+import ru.course.strategy.StandardAlgorithm;
 import ru.course.systemClasses.filters.Filter;
+import ru.course.systemClasses.filters.FilterObj;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -34,11 +38,13 @@ public final class SystemManager implements IterableCollection {
     /**
      * Фильтр, используемый системой
      */
+    @Getter
+    @Setter
     private Filter filter;
 
     private SystemManager() {
         this.userList = new ArrayList<>();
-        this.filter = null;
+        this.filter = new FilterObj(new StandardAlgorithm());
         logger.info("System manager has been initialized");
     }
 
@@ -138,19 +144,6 @@ public final class SystemManager implements IterableCollection {
     public List<FilterResult> findFilterResultByUserID(int id) {
         Optional<User> user = instance.findUsersByID(id);
         return user.map(value -> filter.findFilterResultByUser(value)).orElse(null);
-    }
-
-    /**
-     * Метод добавления нового пользователя в список пользователей
-     *
-     * @param user новый пользователь
-     */
-    public void addUser(User user) {
-        this.userList.add(user);
-    }
-
-    public void setFilter(Filter filter) {
-        this.filter = filter;
     }
 
     public List<User> getUserList() {
