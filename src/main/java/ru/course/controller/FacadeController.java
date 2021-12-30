@@ -8,7 +8,14 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.course.Config;
 import ru.course.strategy.StandardAlgorithm;
 import ru.course.strategy.StrictAlgorithm;
+import ru.course.systemClasses.FilterResult;
 import ru.course.systemClasses.SystemManager;
+import ru.course.systemClasses.User;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для запросов от клиента
@@ -22,12 +29,13 @@ public class FacadeController {
      *
      * @return ModelAndView для главного экрана
      */
-    @GetMapping("/main_screen")
-    public ModelAndView startSystem()  {
+    @GetMapping("/main_page")
+    public ModelAndView startSystem() {
         new Config("config.properties");
         SystemManager manager = SystemManager.getInstance();
         ModelAndView modelAndView = new ModelAndView("main_page");
-        modelAndView.addObject("userList", manager.getUserList());
+        modelAndView.addObject("userList", manager.getUserList().stream()
+                .sorted(Comparator.comparingLong(User::getUserId)).collect(Collectors.toList()));
         if (manager.getFilter().getAlgorithm() instanceof StandardAlgorithm)
             modelAndView.addObject("currentAlg", "Стандартный алгоритм");
         else
@@ -47,7 +55,7 @@ public class FacadeController {
         manager.generateUsers();
         manager.launchUsersThreads();
         Thread.sleep(1000);
-        return new ModelAndView("redirect:/main_screen");
+        return new ModelAndView("redirect:/main_page");
     }
 
     /**
@@ -62,7 +70,7 @@ public class FacadeController {
             SystemManager.getInstance().getFilter().setAlgorithm(new StandardAlgorithm());
         else
             SystemManager.getInstance().getFilter().setAlgorithm(new StrictAlgorithm());
-        return new ModelAndView("redirect:/main_screen");
+        return new ModelAndView("redirect:/main_page");
     }
 
     /**
@@ -74,10 +82,26 @@ public class FacadeController {
     @GetMapping("/main_screen/user/{id}")
     public ModelAndView showUser(@PathVariable int id) {
         ModelAndView modelAndView = new ModelAndView("user_page");
-        modelAndView.addObject("user", SystemManager.getInstance().getUserList().get(id - 1));
+        modelAndView.addObject("user", SystemManager.getInstance().getUserList()
+                .stream().filter(user -> user.getUserId() == id).findFirst());
         modelAndView.addObject("filterResults", SystemManager.getInstance()
-                .findFilterResultByUserID(id - 1));
+                .findFilterResultByUserID(id));
         return modelAndView;
+    }
+
+    /**
+     * Метод обработки запроса на повторную фильтрацию действий пользователей
+     *
+     * @return редирект на главный экран
+     */
+    @GetMapping("/main_screen/do_filtration")
+    public ModelAndView doFiltration() {
+        SystemManager systemManager = SystemManager.getInstance();
+        List<FilterResult> filterResultList = new ArrayList<>(systemManager.getFilter().getResults());
+        systemManager.getFilter().getResults().clear();
+        for (FilterResult filterResult : filterResultList)
+            systemManager.getFilter().computeResult(filterResult.getUser(), filterResult.getText());
+        return new ModelAndView("redirect:/main_page");
     }
 
 }

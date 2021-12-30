@@ -12,6 +12,7 @@ import ru.course.strategy.StandardAlgorithm;
 import ru.course.systemClasses.filters.Filter;
 import ru.course.systemClasses.filters.FilterObj;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,6 +34,7 @@ public final class SystemManager implements IterableCollection {
     /**
      * Список пользователей
      */
+    @Getter
     private final List<User> userList;
 
     /**
@@ -71,12 +73,14 @@ public final class SystemManager implements IterableCollection {
     public void generateUsers() {
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();
         for (int i = 0; i < Config.USERS_QUANTITY; i++) {
+            long id = localRandom.nextLong(1000, 10000);
             String name = Config.NAMES.get(localRandom.nextInt(Config.NAMES_COUNT)) +
                     " " +
                     Config.SURNAMES.get(localRandom.nextInt(Config.SURNAMES_COUNT));
-            String regDate = new Date(localRandom.nextLong(Config.START_DATE.getTime(), new Date().getTime()))
-                    .toString();
-            this.userList.add(new User(name, regDate));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            String regDate = simpleDateFormat.format(new Date(localRandom.nextLong(Config.START_DATE.getTime(),
+                    new Date().getTime())));
+            this.userList.add(new User(id, name, regDate));
         }
         System.out.println();
     }
@@ -94,11 +98,12 @@ public final class SystemManager implements IterableCollection {
     /**
      * Процедура регистрации нового пользователя
      *
+     * @param id      id
      * @param FIO     ФИО
      * @param regDate дата регистрации
      */
-    public void newUserRegistration(String FIO, String regDate) {
-        User newUser = new User(FIO, regDate);
+    public void newUserRegistration(long id, String FIO, String regDate) {
+        User newUser = new User(id, FIO, regDate);
         userList.add(newUser);
         System.out.println("New user has been added");
     }
@@ -131,7 +136,7 @@ public final class SystemManager implements IterableCollection {
      */
     public Optional<User> findUsersByID(int id) {
         return userList.stream()
-                .filter(currUser -> currUser.getId() == id)
+                .filter(currUser -> currUser.getUserId() == id)
                 .findFirst();
     }
 
@@ -144,10 +149,6 @@ public final class SystemManager implements IterableCollection {
     public List<FilterResult> findFilterResultByUserID(int id) {
         Optional<User> user = instance.findUsersByID(id);
         return user.map(value -> filter.findFilterResultByUser(value)).orElse(null);
-    }
-
-    public List<User> getUserList() {
-        return userList;
     }
 
 }

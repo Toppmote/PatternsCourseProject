@@ -1,5 +1,7 @@
 package ru.course.systemClasses;
 
+import lombok.Getter;
+
 /**
  * Класс, описывающий результат фильтрации
  */
@@ -8,11 +10,13 @@ public class FilterResult {
     /**
      * Пользователь
      */
+    @Getter
     private final User user;
 
     /**
      * Текст, написанный пользователем
      */
+    @Getter
     private final String text;
 
     /**
@@ -24,10 +28,6 @@ public class FilterResult {
         this.user = user;
         this.text = text;
         this.harmPercent = harmPercent;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     @Override

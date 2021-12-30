@@ -21,7 +21,7 @@ public class User extends Thread {
      * ID пользователя. Уникально
      */
     @Getter
-    private final long id;
+    private final long userId;
 
     /**
      * ФИО пользователя
@@ -60,16 +60,24 @@ public class User extends Thread {
     /**
      * Состояние пользователя
      */
-    private UserState state;
+    @Getter
+    private UserState userState;
 
-    public User(String FIO, String regDate) {
+    /**
+     * Состояние пользователя строкой
+     */
+    @Getter
+    private String stringState;
+
+    public User(long id, String FIO, String regDate) {
         this.FIO = FIO;
         this.regDate = regDate;
         friendsList = new ArrayList<>();
         activityFeed = new ArrayList<>();
         messageList = new ArrayList<>();
-        this.id = this.hashCode();
-        this.state = UserState.UNVERIFIED_STATE;
+        this.userId = id;
+        this.userState = UserState.UNVERIFIED_STATE;
+        this.stringState = "Неподтвержден";
     }
 
     /**
@@ -110,21 +118,23 @@ public class User extends Thread {
     }
 
     /**
-     * Геттер для состояния
-     *
-     * @return состояние пользователя
-     */
-    public UserState getUserState() {
-        return state;
-    }
-
-    /**
      * Сеттер для состояния
      *
      * @param state новое состояние пользователя
      */
     public void setUserState(UserState state) {
-        this.state = state;
+        this.userState = state;
+        switch (state) {
+            case BLOCKED_STATE:
+                this.stringState = "Заблокирован";
+                break;
+            case VERIFIED_STATE:
+                this.stringState = "Подтвержден";
+                break;
+            case UNVERIFIED_STATE:
+                this.stringState = "Неподтвержден";
+                break;
+        }
     }
 
     /**
@@ -156,7 +166,7 @@ public class User extends Thread {
                     this.activityFeed.add(sendMesAction);
                     break;
                 case 3:
-                    if (this.state != UserState.VERIFIED_STATE) {
+                    if (this.userState != UserState.VERIFIED_STATE) {
                         UserAction doVerification = new DoVerification(new Date().toString());
                         doVerification.doAction(this);
                         this.activityFeed.add(doVerification);
