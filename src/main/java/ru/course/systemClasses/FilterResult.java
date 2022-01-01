@@ -22,6 +22,7 @@ public class FilterResult {
     /**
      * Процент вредоносности
      */
+    @Getter
     private final int harmPercent;
 
     public FilterResult(User user, String text, int harmPercent) {

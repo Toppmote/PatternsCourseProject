@@ -18,11 +18,11 @@ public class StrictAlgorithm implements Algorithm {
     @Override
     public synchronized FilterResult runAlgorithm(User user, String text) {
         int harmPercent = 0;
-        List<String> bad_words = Arrays.stream(text.split(" "))
+        List<String> badWords = Arrays.stream(text.split(" "))
                 .filter(word -> Config.BAD_WORDS.contains(word))
                 .collect(Collectors.toList());
-        if (bad_words.size() != 0) {
-            harmPercent = bad_words.size() / text.split(" ").length * 100;
+        if (badWords.size() != 0) {
+            harmPercent = (int) ((double) badWords.size() / Arrays.stream(text.split(" ")).count() * 100);
             user.setUserState(UserState.BLOCKED_STATE);
         }
         return new FilterResult(user, text, harmPercent);

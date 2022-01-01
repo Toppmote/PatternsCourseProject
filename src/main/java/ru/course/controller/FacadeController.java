@@ -49,12 +49,11 @@ public class FacadeController {
      * @return редирект на главный экран
      * @throws InterruptedException выбрасывается при методе sleep()
      */
-    @GetMapping("/main_screen/generate_users")
+    @GetMapping("/main_page/generate_users")
     public ModelAndView generateUsers() throws InterruptedException {
         SystemManager manager = SystemManager.getInstance();
         manager.generateUsers();
         manager.launchUsersThreads();
-        Thread.sleep(1000);
         return new ModelAndView("redirect:/main_page");
     }
 
@@ -64,7 +63,7 @@ public class FacadeController {
      * @param algorithm наименование нового алгоритма
      * @return редирект на главный экран
      */
-    @GetMapping("/main_screen/set_algorithm/{algorithm}")
+    @GetMapping("/main_page/set_algorithm/{algorithm}")
     public ModelAndView setAlgorithm(@PathVariable String algorithm) {
         if (algorithm.equals("standard"))
             SystemManager.getInstance().getFilter().setAlgorithm(new StandardAlgorithm());
@@ -79,11 +78,12 @@ public class FacadeController {
      * @param id id пользователя
      * @return ModelAndView для страницы пользователя
      */
-    @GetMapping("/main_screen/user/{id}")
+    @GetMapping("/main_page/user/{id}")
     public ModelAndView showUser(@PathVariable int id) {
         ModelAndView modelAndView = new ModelAndView("user_page");
-        modelAndView.addObject("user", SystemManager.getInstance().getUserList()
-                .stream().filter(user -> user.getUserId() == id).findFirst());
+        SystemManager.getInstance().getUserList()
+                .stream().filter(currUser -> currUser.getUserId() == id).findFirst()
+                .ifPresent(user -> modelAndView.addObject("user", user));
         modelAndView.addObject("filterResults", SystemManager.getInstance()
                 .findFilterResultByUserID(id));
         return modelAndView;
@@ -94,7 +94,7 @@ public class FacadeController {
      *
      * @return редирект на главный экран
      */
-    @GetMapping("/main_screen/do_filtration")
+    @GetMapping("/main_page/do_filtration")
     public ModelAndView doFiltration() {
         SystemManager systemManager = SystemManager.getInstance();
         List<FilterResult> filterResultList = new ArrayList<>(systemManager.getFilter().getResults());
