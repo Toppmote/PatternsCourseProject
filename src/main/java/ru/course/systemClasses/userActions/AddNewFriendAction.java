@@ -29,7 +29,9 @@ public class AddNewFriendAction extends UserAction {
                 User friend = SystemManager.getInstance().getUserList().get(localRandom.nextInt(Config.USERS_QUANTITY));
                 if (user != friend && !user.getFriendsList().contains(friend)) {
                     user.getFriendsList().add(friend);
-                    this.setDescription(user.getFIO() + " added new friend " + friend.getFIO());
+                    this.setDescription("Добавил в друзья пользователя " + friend.getFIO());
+                    user.getActivityFeed().add(this);
+                    friend.addFriend(user);
                     break;
                 }
             }

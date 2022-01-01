@@ -45,7 +45,7 @@ public class SendMesAction extends UserAction {
                 user.addFriend();
                 friendsCount++;
             }
-            int recipientsCount = threadLocalRandom.nextInt(friendsCount + 1);
+            int recipientsCount = threadLocalRandom.nextInt(1, friendsCount + 1);
             int wordsCount = threadLocalRandom.nextInt(Config.MIN_WORDS_COUNT, Config.MAX_WORDS_COUNT);
             for (int i = 0; i < wordsCount; i++)
                 stringBuilder.append(Config.ALL_WORDS.get(threadLocalRandom.nextInt(Config.WORDS_COUNT)))
@@ -58,11 +58,27 @@ public class SendMesAction extends UserAction {
                     .contentList(Collections.singletonList(messageText))
                     .build());
             this.recipientList = recipientList;
-            this.setDescription("Message sent to this users: " + recipientList);
-            SystemManager.getInstance().getFilter().computeResult(user, stringBuilder.toString());
+            this.setDescription("Пользователь отправил новое сообщение.</br>Текст сообщения: " + messageText.getTextValue() +
+                    "</br>Получатели: " + this.getRecipients(recipientList));
+            SystemManager.getInstance().getFilter().computeResult(user, messageText.getTextValue());
             System.out.println("New message has been sent. Date " + date);
+            user.getActivityFeed().add(this);
         } else
             System.out.println("User " + user.getFIO() + " cannot send messages, because he is blocked.");
+    }
+
+    /**
+     * Метод преобразования списка получателей в строку
+     *
+     * @param recipientList список получателей
+     * @return строка со списком получателей
+     */
+    private synchronized String getRecipients(List<User> recipientList) {
+        StringBuilder recipients = new StringBuilder();
+        for (User recipient : recipientList)
+            recipients.append(recipient.FIO).append(", ");
+        recipients.setLength(recipients.length() - 2);
+        return recipients.toString();
     }
 
 }

@@ -6,6 +6,7 @@ import lombok.Setter;
 import ru.course.Config;
 import ru.course.systemClasses.userActions.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -84,8 +85,21 @@ public class User extends Thread {
      * Процедура добавления друга
      */
     public void addFriend() {
-        UserAction addNewFriendAction = new AddNewFriendAction(new Date().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        UserAction addNewFriendAction = new AddNewFriendAction(simpleDateFormat.format(new Date()));
         addNewFriendAction.doAction(this);
+    }
+
+    /**
+     * Процедура добавления друга
+     *
+     * @param user добавляемый друг
+     */
+    public void addFriend(User user) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        UserAction addNewFriendAction = new AddNewFriendAction(simpleDateFormat.format(new Date()));
+        addNewFriendAction.setDescription("Добавил в друзья пользователя " + user.getFIO());
+        this.friendsList.add(user);
         this.activityFeed.add(addNewFriendAction);
     }
 
@@ -149,27 +163,25 @@ public class User extends Thread {
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
         int userActionQuantity = threadLocalRandom
                 .nextInt(Config.MIN_USER_ACTIONS_QUANTITY, Config.MAX_USER_ACTIONS_QUANTITY);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         for (int i = 0; i < userActionQuantity; i++) {
             int actionNumber = threadLocalRandom.nextInt(Config.ACTIONS_QUANTITY);
             switch (actionNumber) {
                 case 0:
-                    UserAction doNewPostAction = new DoNewPostAction(new Date().toString());
+                    UserAction doNewPostAction = new DoNewPostAction(simpleDateFormat.format(new Date()));
                     doNewPostAction.doAction(this);
-                    this.activityFeed.add(doNewPostAction);
                     break;
                 case 1:
                     this.addFriend();
                     break;
                 case 2:
-                    UserAction sendMesAction = new SendMesAction(new Date().toString());
+                    UserAction sendMesAction = new SendMesAction(simpleDateFormat.format(new Date()));
                     sendMesAction.doAction(this);
-                    this.activityFeed.add(sendMesAction);
                     break;
                 case 3:
                     if (this.userState != UserState.VERIFIED_STATE) {
-                        UserAction doVerification = new DoVerification(new Date().toString());
+                        UserAction doVerification = new DoVerification(simpleDateFormat.format(new Date()));
                         doVerification.doAction(this);
-                        this.activityFeed.add(doVerification);
                         break;
                     } else
                         System.out.println("User " + this.FIO + " already verify his account");

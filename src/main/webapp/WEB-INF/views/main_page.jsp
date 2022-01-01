@@ -13,19 +13,19 @@
 <div class="navbar">
     <ul>
         <li>
-            <button onclick='location.href="/main_screen/generate_users"'>Сгенерировать</button>
+            <button onclick='location.href="/main_page/generate_users"'>Сгенерировать</button>
         </li>
         <li>
-            <button onclick='location.href="/main_screen/do_filtration"'>Отфильтровать заново</button>
+            <button onclick='location.href="/main_page/do_filtration"'>Отфильтровать заново</button>
         </li>
         <li>
             <button>Изменить алгоритм фильтрации<i class="fa fa-caret-down"></i></button>
             <ul class="dropdown-menu">
                 <li>
-                    <button onclick='location.href="/main_screen/set_algorithm/standard"'>Стандартный алгоритм</button>
+                    <button onclick='location.href="/main_page/set_algorithm/standard"'>Стандартный алгоритм</button>
                 </li>
                 <li>
-                    <button onclick='location.href="/main_screen/set_algorithm/strict"'>Строгий алгоритм</button>
+                    <button onclick='location.href="/main_page/set_algorithm/strict"'>Строгий алгоритм</button>
                 </li>
             </ul>
         </li>
@@ -41,12 +41,12 @@
             <th scope="col">Дата регистрации</th>
             <th scope="col">Состояние</th>
         </tr>
-        <c:forEach items="${userList}" var="user">
+        <c:forEach items="${userList}" var="friend">
             <tr>
-                <td><a href="/main_screen/user/${user.userId}">${user.userId}</a></td>
-                <td>${user.FIO}</td>
-                <td>${user.regDate}</td>
-                <td>${user.stringState}</td>
+                <td><a href="/main_page/user/${friend.userId}">${friend.userId}</a></td>
+                <td>${friend.FIO}</td>
+                <td>${friend.regDate}</td>
+                <td>${friend.stringState}</td>
             </tr>
         </c:forEach>
     </table>

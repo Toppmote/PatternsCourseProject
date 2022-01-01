@@ -90,8 +90,8 @@ public final class SystemManager implements IterableCollection {
      */
     public void launchUsersThreads() {
         ExecutorService executorService = Executors.newFixedThreadPool(Config.USERS_QUANTITY);
-        for (int i = 0; i < Config.USERS_QUANTITY; i++)
-            executorService.execute(this.userList.get(i));
+        for (User user : this.userList)
+            executorService.execute(user);
         executorService.shutdown();
     }
 
